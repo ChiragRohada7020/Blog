@@ -63,7 +63,15 @@ def Search(input):
     result = mycollection.find({'$text': {'$search': input}})
     list=[]
     for i in result:
-        print(i)
+        
+        list.append({"heading":i['heading'],"url":i['url']})
+    mycollection = db["work"]
+    
+    
+    # mycollection.create_index([("heading", 'text')])
+    result = mycollection.find({'$text': {'$search': input}})
+    for i in result:
+        
         list.append({"heading":i['heading'],"url":i['url']})
     print(list)
     

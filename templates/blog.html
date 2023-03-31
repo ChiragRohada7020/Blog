@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BLog</title>
+    <title>Rohadas Blogs</title>
     <link
       href="{{url_for('static',filename='dist/output.css')}}"
       rel="stylesheet"
@@ -20,7 +20,7 @@
       <div class="text-start flex flex-col gap-2">
         <div class="">
           <h1 class="font-medium font-sans" id="discription">
-            {{data['discription']}}
+            {{data['heading2']}}
           </h1>
         </div>
         <div>
@@ -38,11 +38,12 @@
         />
         {% endif %}
       </div>
-      <div class="flex flex-col gap-5 font-sans space-y-5 mt-6 text-l">
+      <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-l">
         <discription>
           <p>{{data['discription']}}</p>
         </discription>
-        <p>{{data['body']}}</p>
+        <p>{{data['body1']}}</p>
+        <p>{{data['body2']}}</p>
       </div>
       <div>
         {% if data['img2'] %}

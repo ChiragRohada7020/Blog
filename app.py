@@ -30,7 +30,9 @@ def Add_blog():
        # getting input with name = fname in HTML form
        heading = request.form.get("heading")
        discription = request.form.get("discription")
-       body = request.form.get("body")
+       body1 = request.form.get("body1")
+       body2 = request.form.get("body2")
+       heading2 = request.form.get("heading2")
        url = request.form.get("url")
        info = request.form.get("info")
        date = request.form.get("date")
@@ -46,7 +48,7 @@ def Add_blog():
        
        mycollection = db[info]
        date_object = datetime.strptime(date, '%Y-%m-%d')
-       mydict = {"heading": heading, "url": url,"discription":discription,"date":date_object,"m-img":x[0],"img1":y[0],"body":body}
+       mydict = {"heading": heading, "url": url,"discription":discription,"date":date_object,"m-img":x[0],"img1":y[0],"body1":body1,"body2":body2,"heading2":heading2}
 
        data=mycollection.insert_one(mydict)
     #    print(date)

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <!--- basic page needs
+    ================================================== -->
+    <meta charset="utf-8" />
+    <title>Typerite</title>
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <!-- mobile specific metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- CSS
+    ================================================== -->
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/base.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/vendor.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/main.css')}}"
+    />
+
+    <!-- script
+    ================================================== -->
+    <!-- <script src="{{url_for('static',filename='js/modernizr.js')}}"></script> -->
+
+    <!-- favicons
+    ================================================== -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="manifest" href="site.webmanifest" />
+  </head>
+
+  <body>
+    <!-- preloader
+    ================================================== -->
+    <div id="preloader">
+      <div id="loader" class="dots-fade">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div id="top" class="s-wrap site-wrapper">
+      <!-- site header
+        ================================================== -->
+      <header class="s-header">
+        <div class="header__top">
+          <div class="header__logo">
+            <h1 style="color: white">
+              Roh<span style="color: red">a</span>das
+            </h1>
+          </div>
+        </div>
+        <!-- end header__top -->
+
+        <nav class="header__nav-wrap">
+          <ul class="header__nav">
+            <li class="current"><a href="{{ url_for('Home') }}" title="">Home</a></li>
+            <li class="has-children">
+              <a href="#0" title="">Categories</a>
+              <ul class="sub-menu">
+                <li><a href="{{ url_for('Travel') }}">Travel</a></li>
+                
+                <li><a href="{{ url_for('Work') }}">Work</a></li>
+              </ul>
+            </li>
+
+            <li><a href="page-about.html" title="">About</a></li>
+            <li><a href="page-contact.html" title="">Contact</a></li>
+          </ul>
+          <!-- end header__nav -->
+
+          <ul class="header__social">
+            <li class="ss-facebook">
+              <a href="https://facebook.com/">
+                <span class="screen-reader-text">Facebook</span>
+              </a>
+            </li>
+            <li class="ss-twitter">
+              <a href="#0">
+                <span class="screen-reader-text">Twitter</span>
+              </a>
+            </li>
+            <li class="ss-dribbble">
+              <a href="#0">
+                <span class="screen-reader-text">Dribbble</span>
+              </a>
+            </li>
+            <li class="ss-pinterest">
+              <a href="#0">
+                <span class="screen-reader-text">Behance</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- end header__nav-wrap -->
+
+        <!-- menu toggle -->
+        <a href="#0" class="header__menu-toggle">
+          <span>Menu</span>
+        </a>
+      </header>
+      <!-- end s-header -->
+
+      <!-- search
+        ================================================== -->
+      <div class="s-search">
+        <div class="search-block">
+          <form role="search" method="get" class="search-form" action="#">
+            <label>
+              <span class="hide-content">Search for:</span>
+              <input
+                id="searchInput"
+                type="search"
+                class="search-field"
+                placeholder="Type Keywords"
+                value=""
+                name="s"
+                title="Search for:"
+                autocomplete="off"
+                oninput="fetchData()"
+              />
+            </label>
+            <input type="submit" class="search-submit" value="Search" />
+            <ul id="searchResults" style="padding: 40px"></ul>
+          </form>
+
+          <a href="#0" title="Close Search" class="search-close">Close</a>
+        </div>
+
+        <!-- end search-block -->
+
+        <!-- search modal trigger -->
+        <a href="#0" class="search-trigger">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: rgba(0, 0, 0, 1); transform: ; -ms-filter: "
+          >
+            <path
+              d="M10,18c1.846,0,3.543-0.635,4.897-1.688l4.396,4.396l1.414-1.414l-4.396-4.396C17.365,13.543,18,11.846,18,10 c0-4.411-3.589-8-8-8s-8,3.589-8,8S5.589,18,10,18z M10,4c3.309,0,6,2.691,6,6s-2.691,6-6,6s-6-2.691-6-6S6.691,4,10,4z"
+            ></path>
+          </svg>
+          <span>Search</span>
+        </a>
+        <span class="search-line"></span>
+      </div>
+      <!-- end s-search -->
+
+      <!-- site content
+        ================================================== -->
+      <div class="s-content">
+        <div class="masonry-wrap">
+          <div class="masonry">
+            <div class="grid-sizer"></div>
+            {% for item in data%}
+
+            <article class="masonry__brick entry format-standard animate-this">
+              <div class="entry__thumb">
+                <a href=/blog/{{item['url']}} class="entry__thumb-link">
+                  <img src="{{url_for('static',filename='images/post_images/'+item['m-img']+'.jpg')}}" />
+                </a>
+              </div>
+
+              <div class="entry__text">
+                <div class="entry__header">
+                  <h2 class="entry__title">
+                    <a href=/blog/{{item['url']}}>{{item["heading"]}}</a>
+                  </h2>
+                  <div class="entry__meta">
+                    <!-- <span class="entry__meta-cat">
+                      <a href="category.html">Design</a>
+                      <a href="category.html">Photography</a>
+                    </span> -->
+                    <span class="entry__meta-date">
+                      <a href="single-standard.html"
+                        >{{ item["date"].strftime("%B %d, %Y") }}</a
+                      >
+                    </span>
+                  </div>
+                </div>
+                <div class="entry__excerpt">
+                  <p>{{item["discription"]}}</p>
+                </div>
+              </div>
+            </article>
+            <!-- <quote class="masonry__brick entry format-standard animate-this">
+              <div class="entry__thumb">
+                <a href="" class="entry__thumb-link">
+                  <img src=""/>
+                </a>
+              </div>
+
+              <div class="entry__text">
+                <div class="entry__header">
+                  <h2 class="entry__title">
+                    <a href="">heading</a>
+                  </h2>
+                  <div class="entry__meta">
+                    <span class="entry__meta-cat">
+                      <a href="category.html">Design</a>
+                      <a href="category.html">Photography</a>
+                    </span>
+                    <span class="entry__meta-date">
+                      <a href="single-standard.html"
+                        ></a
+                      >
+                    </span>
+                  </div>
+                </div>
+                <div class="entry__excerpt">
+                  <p>making a url world and creating he </p>
+                </div>
+              </div>
+            </quote> -->
+            {% endfor %}
+            <!-- end article -->
+            
+          </div>
+          <!-- end masonry -->
+        </div>
+        <!-- end masonry-wrap -->
+      </div>
+      <!-- end s-content -->
+
+      <!-- footer
+        ================================================== -->
+        <footer class="s-footer">
+          <div class="row">
+            <div class="column large-full footer__content">
+              <div class="footer__copyright">
+                <span>© Copyright Blog 2023</span>
+                <span
+                  >
+                  <a href="https://www.styleshout.com/">Chirag Rohada</a></span
+                >
+              </div>
+            </div>
+          </div>
+  
+          <div class="go-top">
+            <a class="smoothscroll" title="Back to Top" href="#top"></a>
+          </div>
+        </footer>
+    </div>
+    <!-- end s-wrap -->
+
+    <!-- Java Script
+    ================================================== -->
+    <script src="{{url_for('static',filename='js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/plugins.js')}}"></script>
+    <script src="{{url_for('static',filename='js/main.js')}}"></script>
+    <script>
+      function fetchData() {
+        let searchInput = document.getElementById("searchInput");
+        let searchResults = document.getElementById("searchResults");
+
+        // Clear the search results
+        searchResults.innerHTML = "";
+
+        // Fetch data from the server
+        fetch("/search/" + searchInput.value)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            data.forEach((result) => {
+              
+              const newListItem = document.createElement("li");
+              // Set the li style using the setAttribute method
+              newListItem.setAttribute(
+                "style",
+                "color: red; font-size: 16px;list-style-type:none;"
+              );
+              // Create a new anchor tag
+              const newAnchor = document.createElement("a");
+              // Set the anchor tag href and text content
+              newAnchor.setAttribute("href", "/blog/"+result['url']);
+              newAnchor.textContent = result['heading'];
+              // Append the anchor tag to the li element
+              newListItem.appendChild(newAnchor);
+              // Append the new li element to the parent element
+
+              searchResults.appendChild(newListItem);
+            });
+          });
+      }
+    </script>
+  </body>
+</html>

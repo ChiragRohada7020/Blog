@@ -22,6 +22,14 @@ def Home():
 
     return render_template('index.html',data=data,data2=data2)
 
+
+
+
+@app.route('/about_us')
+def About():
+ 
+    return render_template('about_us.html')
+
 @app.route('/add_blog',methods =["GET", "POST"])
 def Add_blog():
     # data=db['lifestyle'].find().sort([("date", 1)]).limit(3)

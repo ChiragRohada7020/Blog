@@ -46,7 +46,7 @@ def Add_blog():
        
        mycollection = db[info]
        date_object = datetime.strptime(date, '%Y-%m-%d')
-       mydict = {"heading": heading, "url": url,"discription":discription,"date":date_object,"m-img":x[0],"img1":y[0]}
+       mydict = {"heading": heading, "url": url,"discription":discription,"date":date_object,"m-img":x[0],"img1":y[0],"body":body}
 
        data=mycollection.insert_one(mydict)
     #    print(date)

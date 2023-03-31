@@ -7,6 +7,9 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
+
 client = MongoClient("mongodb+srv://Blog:Blog12345@atlascluster.t7vxr4g.mongodb.net/test")
 
 db = client.Blog

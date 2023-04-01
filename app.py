@@ -17,10 +17,13 @@ db = client.Blog
 
 @app.route('/')
 def Home():
-    data=db['lifestyle'].find().sort([("date", 1)]).limit(3)
-    data2 = db['work'].find().sort([("date", 1)]).limit(3)
+    try:
+        data=db['lifestyle'].find().sort([("date", 1)]).limit(3)
+        data2 = db['work'].find().sort([("date", 1)]).limit(3)
 
-    return render_template('index.html',data=data,data2=data2)
+        return render_template('index.html',data=data,data2=data2)
+    except:
+        return "Error"
 
 
 
@@ -103,13 +106,16 @@ def Work():
 
 @app.route('/blog/<url>')
 def Blog(url):
-    mycollection = db["lifestyle"]
-    data=mycollection.find_one({'url': url})
-    if data:
-        print("ok")
-    else:
-        mycollection = db["work"]
+    try:
+        mycollection = db["lifestyle"]
         data=mycollection.find_one({'url': url})
+        if data:
+            print("ok")
+        else:
+            mycollection = db["work"]
+            data=mycollection.find_one({'url': url})
 
     
-    return render_template('blog.html',data=data)
+        return render_template('blog.html',data=data)
+    except:
+        return "error"

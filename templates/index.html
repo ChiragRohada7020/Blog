@@ -327,11 +327,13 @@
           .then((response) => response.json())
           .then((data) => {
             console.log(data);
-            
+             
+
+searchResults.innerText=""
             data.forEach((result) => {
             
               
-              const newListItem = document.createElement("li");
+                const newListItem = document.createElement("li");
               // Set the li style using the setAttribute method
               newListItem.setAttribute(
                 "style",
@@ -347,6 +349,8 @@
               // Append the new li element to the parent element
 
               searchResults.appendChild(newListItem);
+
+              
               
                
             });

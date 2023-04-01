@@ -118,4 +118,4 @@ def Blog(url):
     
         return render_template('blog.html',data=data)
     except:
-        return "error"
+        return render_template('error.html')

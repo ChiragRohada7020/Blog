@@ -84,7 +84,7 @@ def Add_blog():
                 email_list.append(i)
             print(email_list)
             msg = Message(
-                'Hello',
+                'Rohadas Blogs',
                 sender ='rohadas.blogs@gmail.com',
                 recipients = email_list
                )

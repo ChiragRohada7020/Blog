@@ -7,6 +7,10 @@
     <title>Rohadas Blog</title>
     <meta name="description" content="" />
     <meta name="author" content="" />
+    <link
+      href="{{url_for('static',filename='dist/output.css')}}"
+      rel="stylesheet"
+    />
 
     <!-- mobile specific metas
     ================================================== -->
@@ -78,6 +82,17 @@
             <li><a href="{{ url_for('About') }}" title="">About</a></li>
           </ul>
           <!-- end header__nav -->
+          <div class=""><form action={{ url_for('Email') }} method="post" class="flex flex-col">
+            {% with messages = get_flashed_messages() %}
+            <input type="email" name="email" placeholder="Subscribe For NewsLetter"  style="color: white;" width=""  />
+            {% if messages %}
+            <button type="submit" style="background-color: gray;">Congrats</button>
+            {% else %}
+            <button type="submit" style="background-color: gray;">Submit</button>
+            {% endif %}
+            {% endwith %}
+          </form></div>
+          
 
           <ul class="header__social">
             <li class="ss-instagram">

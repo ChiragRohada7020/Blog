@@ -175,6 +175,7 @@ def Blog(url):
         if not data:
             mycollection = db["work"]
             data = mycollection.find_one({'url': url})
+        print(data)
 
         # Splitting body1 content into paragraphs based on newline characters
         if 'body1' in data:

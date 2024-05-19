@@ -168,17 +168,18 @@ def Email():
 def Blog(url):
     try:
         mycollection = db["lifestyle"]
-        data=mycollection.find_one({'url': url})
+        data = mycollection.find_one({'url': url})
         mycollection = db["email"]
-        users=mycollection.email.distinct( "email" )
-        
-        if data:
-            print("ok")
-        else:
-            mycollection = db["work"]
-            data=mycollection.find_one({'url': url})
+        users = mycollection.email.distinct("email")
 
-    
-        return render_template('blog.html',data=data)
+        if not data:
+            mycollection = db["work"]
+            data = mycollection.find_one({'url': url})
+
+        # Splitting body1 content into paragraphs based on newline characters
+        if 'body1' in data:
+            data['body1'] = data['body1'].split('\n')
+
+        return render_template('blog.html', data=data)
     except:
         return render_template('error.html')

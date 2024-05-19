@@ -34,8 +34,8 @@ mail = Mail(app)
 @app.route('/')
 def Home():
     try:
-        data=db['lifestyle'].find().sort([("date", 1)]).limit(3)
-        data2 = db['work'].find().sort([("date", 1)]).limit(3)
+        data=db['lifestyle'].find().sort([("date", -1)]).limit(3)
+        data2 = db['work'].find().sort([("date", -1)]).limit(3)
 
         return render_template('index.html',data=data,data2=data2)
     except:

@@ -1,58 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rohadas Blogs</title>
-    <link
-      href="{{url_for('static',filename='dist/output.css')}}"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div
-      class="xl:mx-60 lg:mx-40 2xl:mx-80 md:mx-20 mx-5 mt-32 flex flex-col gap-5 mb-32 transition duration-1000"
-    >
-      <div class="text-start">
-        <h1 class="font-bold text-5xl font-serif">{{data['heading']}}</h1>
-      </div>
-      <div class="text-start flex flex-col gap-2">
-        <div class="">
-          <h1 class="font-medium font-sans" id="discription">
-           <a href={{data['heading2']}} class="text-green-500">Click to see</a>
-          </h1>
+    <link href="{{url_for('static',filename='dist/output.css')}}" rel="stylesheet">
+</head>
+<body>
+    <div class="xl:mx-60 lg:mx-40 2xl:mx-80 md:mx-20 mx-5 mt-32 flex flex-col gap-5 mb-32 transition duration-1000">
+        <div class="text-start">
+            <h1 class="font-bold text-5xl font-serif">{{data['heading']}}</h1>
+        </div>
+        <div class="text-start flex flex-col gap-2">
+            <div class="">
+                <h1 class="font-medium font-sans" id="discription">
+                   <a href={{data['heading2']}} class="text-green-500">Click to see</a>
+                </h1>
+            </div>
+            <div>
+                <h1 class="text-xs" id="discription">
+                    By <span class="font-bold">Chirag Rohada</span> |
+                    {{data["date"].strftime("%B %d, %Y")}}
+                </h1>
+            </div>
         </div>
         <div>
-          <h1 class="text-xs" id="discription">
-            By <span class="font-bold">Chirag Rohada</span> |
-            {{data["date"].strftime("%B %d, %Y")}}
-          </h1>
+            {% if data['img1'] %}
+            <img src="{{url_for('static',filename='images/post_images/'+data['img1']+'.jpg')}}" alt="">
+            {% endif %}
         </div>
-      </div>
-      <div>
-        {% if data['img1'] %}
-        <img
-          src="{{url_for('static',filename='images/post_images/'+data['img1']+'.jpg')}}"
-          alt=""
-        />
-        {% endif %}
-      </div>
-      <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-l">
-        <discription>
-          <p>{{data['discription']}}</p>
-        </discription>
-        <p>{{data['body1']}}</p>
-        <p>{{data['body2']}}</p>
-      </div>
-      <div>
-        {% if data['img2'] %}
-        <img
-          src="{{url_for('static',filename='images/post_images/'+data['img2']+'.jpg')}}"
-          alt=""
-        />
-        {% endif %}
-      </div>
+        <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-l">
+            <discription>
+                <p>{{data['discription']}}</p>
+            </discription>
+            {% for paragraph in data['body1'].split('\n') %}
+                <p>{{ paragraph }}</p>
+            {% endfor %}
+            <p>{{data['body2']}}</p>
+        </div>
+        <div>
+            {% if data['img2'] %}
+            <img src="{{url_for('static',filename='images/post_images/'+data['img2']+'.jpg')}}" alt="">
+            {% endif %}
+        </div>
     </div>
-  </body>
+</body>
 </html>

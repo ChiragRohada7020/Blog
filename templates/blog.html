@@ -29,8 +29,8 @@
             <img src="{{ url_for('static', filename='images/post_images/' + data['img1'] + '.jpg') }}" alt="">
         {% endif %}
     </div>
-    <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-l">
-        <discription>
+    <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-lg">
+        <discription class="text-xl font-semibold">
             <p>{{ data['discription'] }}</p>
         </discription>
         <!-- Displaying paragraphs of body1 -->

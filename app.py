@@ -3,7 +3,7 @@ from flask import Flask,flash, jsonify, request, make_response
 from flask import render_template, redirect, url_for
 import json
 import os
-
+from waitress import serve
 from pymongo import MongoClient
 from datetime import datetime
 from flask_mail import Mail, Message
@@ -12,7 +12,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    serve(app, host='0.0.0.0', port=5000)
 
 client = MongoClient("mongodb+srv://Blog:Blog12345@atlascluster.t7vxr4g.mongodb.net/test")
 app.secret_key=os.urandom(24)

@@ -12,8 +12,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=5000)
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
 client = MongoClient("mongodb+srv://Blog:Blog12345@atlascluster.t7vxr4g.mongodb.net/test")
 app.secret_key=os.urandom(24)
 

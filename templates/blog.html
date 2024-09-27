@@ -37,15 +37,15 @@
     </div>
     <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-lg">
         <discription class="text-xl font-semibold">
-            <p>{{ data['discription'] }}</p>
+            <p>{{ data['discription'] | safe }}</p>
         </discription>
         <!-- Displaying paragraphs of body1 -->
         <div>
             {% for paragraph in data['body1'] %}
-                <p class="blog-paragraph">{{ paragraph }}</p>
+                <p class="blog-paragraph">{{ paragraph | safe  }}</p>
             {% endfor %}
         </div>
-        <p>{{ data['body2'] }}</p>
+        <p>{{ data['body2']  }}</p>
     </div>
     <div>
         {% if data['img2'] %}

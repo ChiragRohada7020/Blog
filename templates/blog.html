@@ -45,7 +45,7 @@
                 <p class="blog-paragraph">{{ paragraph | safe  }}</p>
             {% endfor %}
         </div>
-        <p>{{ data['body2']  }}</p>
+        <p>{{ data['body2'] | safe  }}</p>
     </div>
     <div>
         {% if data['img2'] %}

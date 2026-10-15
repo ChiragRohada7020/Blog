@@ -38,6 +38,16 @@ MONGO_URI = os.environ.get("MONGO_URI", "")
 _client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=8000) if MONGO_URI else None
 db = _client.Blog if _client is not None else None
 
+if db is None:
+    # Not fatal at import time - robots.txt and the static pages still work -
+    # but every database-backed route will fail. Say so loudly in the logs
+    # rather than letting a bare `except` swallow the real cause.
+    app.logger.error(
+        "MONGO_URI is not set, so every database-backed page will fail. Set it "
+        "in the environment: locally in .env, on Vercel under "
+        "Project -> Settings -> Environment Variables."
+    )
+
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME", "")
@@ -725,7 +735,15 @@ def Home():
             **seo("%s | %s" % (SITE_NAME, SITE_TAGLINE),
                   DEFAULT_DESCRIPTION, "/"))
     except Exception:
-        return "Error"
+        # This used to `return "Error"` - a five byte body that told the visitor
+        # nothing and left no traceback in the logs. Log it and render a real
+        # page, with a 500 so crawlers do not index the failure.
+        app.logger.exception("Could not render the home page")
+        return render_template(
+            "error.html",
+            heading="Something Went Wrong",
+            message="This page could not be loaded. Please try again in a moment.",
+        ), 500
 
 
 @app.route('/about_us')
@@ -833,7 +851,15 @@ def Travel():
                   "places he has been and what he learned along the way.",
                   "/travel"))
     except Exception:
-        return render_template("error.html")
+        # A silent except here renders the generic "Page Not Found" template,
+        # which is actively misleading when the real cause is a database
+        # failure. Log the traceback and say something accurate.
+        app.logger.exception("Could not render the travel index")
+        return render_template(
+            "error.html",
+            heading="Something Went Wrong",
+            message="The travel posts could not be loaded. Please try again in a moment.",
+        ), 500
 
 
 @app.route('/work')
@@ -847,7 +873,13 @@ def Work():
                   "Projects, products and experiments built by Chirag Rohada.",
                   "/work"))
     except Exception:
-        return render_template("error.html")
+        # See the note on the travel index above.
+        app.logger.exception("Could not render the work index")
+        return render_template(
+            "error.html",
+            heading="Something Went Wrong",
+            message="The work posts could not be loaded. Please try again in a moment.",
+        ), 500
 
 
 @app.route('/email_subscribe', methods=["GET", "POST"])

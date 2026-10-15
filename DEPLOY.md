@@ -65,6 +65,39 @@ Editing is gated behind a session login at **`/login`**. If `ADMIN_USERNAME` /
 `ADMIN_PASSWORD` are unset the admin routes return **503** rather than running
 unauthenticated, so they fail closed.
 
+### If the deployed site errors but works locally
+
+The most common cause is a missing environment variable. The tell-tale pattern:
+
+| Path | Result | Touches the database? |
+| --- | --- | --- |
+| `/robots.txt` | works | no |
+| `/about_us` | works | no |
+| `/` | fails | yes |
+| `/travel`, `/work` | fail | yes |
+| `/sitemap.xml` | loads, but lists **only** the four static pages and **no blog posts** | yes |
+
+`sitemap.xml` is the clearest signal — it degrades to static-only and logs the
+reason. Check the function logs for:
+
+```
+MONGO_URI is not set, so every database-backed page will fail.
+```
+
+That is emitted at import time whenever `db` is `None`, and each failing route
+logs its own traceback. **Adding the variable is not enough on its own** — Vercel
+bakes environment variables into a deployment, so you must **redeploy** for them
+to take effect. Redeploy from **Deployments → ⋯ → Redeploy**, unticking
+"use existing build cache".
+
+Two other things to check if `MONGO_URI` *is* set:
+
+- **Atlas network access.** A new cluster only allows your own IP. Add
+  `0.0.0.0/0` under **Network Access** (or Vercel's egress IPs) or the connection
+  times out after `serverSelectionTimeoutMS` (8s).
+- **A stale deployment.** If the last successful deploy predates the variable,
+  the running code still sees the old environment.
+
 ## Editing the site
 
 Sign in at **`/login`** and a black toolbar appears at the bottom of every page.

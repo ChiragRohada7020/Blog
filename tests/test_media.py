@@ -352,6 +352,93 @@ class TemplateIntegrationTests(unittest.TestCase):
         self.assertNotIn("POST_EDITOR", html)
 
 
+class EditorChromeTests(unittest.TestCase):
+    """The inline editor used to save its own buttons into the post body.
+
+    `decorate()` inserts a drag handle and a delete button *inside* every
+    editable block, and the save path read the block's `innerHTML` wholesale.
+    Those buttons were therefore written to the database and rendered as stray
+    glyphs in the middle of published posts.
+    """
+
+    BUTTONS = (
+        '<button type="button" class="block-handle"'
+        ' title="Drag to move this block" aria-label="Drag to move">&#9776;'
+        "</button>"
+        '<button type="button" class="block-remove"'
+        ' title="Delete this block" aria-label="Delete block">&times;</button>'
+    )
+
+    def test_a_block_holding_only_buttons_strips_to_nothing(self):
+        self.assertEqual(blog.strip_editor_chrome(self.BUTTONS), "")
+
+    def test_text_is_kept_and_the_buttons_are_dropped(self):
+        cleaned = blog.strip_editor_chrome("<p>Hello world.</p>" + self.BUTTONS)
+        self.assertEqual(cleaned, "<p>Hello world.</p>")
+
+    def test_buttons_in_the_middle_do_not_eat_the_rest(self):
+        cleaned = blog.strip_editor_chrome(
+            "<p>before</p>" + self.BUTTONS + "<p>after</p>")
+        self.assertEqual(cleaned, "<p>before</p><p>after</p>")
+
+    def test_ordinary_html_is_untouched(self):
+        html = "<p>Nothing to strip here.</p>"
+        self.assertEqual(blog.strip_editor_chrome(html), html)
+
+    def test_blank_input(self):
+        self.assertEqual(blog.strip_editor_chrome(""), "")
+        self.assertEqual(blog.strip_editor_chrome(None), "")
+
+    def test_clean_blocks_rejects_button_only_blocks(self):
+        cleaned = blog.clean_blocks([
+            {"type": "text", "html": "<p>Real content</p>" + self.BUTTONS},
+            {"type": "text", "html": self.BUTTONS},
+            {"type": "image", "ref": "tg:IMG"},
+        ])
+        self.assertEqual(cleaned, [
+            {"type": "text", "html": "<p>Real content</p>"},
+            {"type": "image", "ref": "tg:IMG"},
+        ])
+
+    def test_blocks_from_post_cleans_already_stored_blocks(self):
+        blocks = blog.blocks_from_post({
+            "url": "p", "body1": "",
+            "blocks": [
+                {"type": "text", "html": "<p>Kept</p>" + self.BUTTONS},
+                {"type": "text", "html": self.BUTTONS},
+                {"type": "image", "ref": "tg:IMG"},
+            ],
+        })
+        self.assertEqual(blocks, [
+            {"type": "text", "html": "<p>Kept</p>"},
+            {"type": "image", "ref": "tg:IMG"},
+        ])
+
+    def test_falls_back_to_body1_when_every_block_was_chrome(self):
+        blocks = blog.blocks_from_post({
+            "url": "p", "body1": "Rebuilt from body1",
+            "blocks": [{"type": "text", "html": self.BUTTONS}],
+        })
+        self.assertEqual(blocks, [{"type": "text", "html": "Rebuilt from body1"}])
+
+    def test_a_corrupted_post_renders_without_the_glyphs(self):
+        from flask import render_template
+
+        post = {
+            "heading": "Corrupted", "date": datetime(2026, 1, 1),
+            "url": "corrupted", "body1": "",
+            "blocks": [{"type": "text", "html": "<p>Real text</p>" + self.BUTTONS}],
+        }
+        with blog.app.test_request_context():
+            html = render_template("blog.html", data=post, category="lifestyle",
+                                   blocks=blog.blocks_from_post(post))
+        self.assertIn("Real text", html)
+        self.assertNotIn("block-handle", html)
+        self.assertNotIn("block-remove", html)
+        self.assertNotIn("\u2630", html)
+        self.assertNotIn("\u00d7", html)
+
+
 class AdminAuthTests(unittest.TestCase):
     """Editing writes to the database, so it is gated behind a session login."""
 

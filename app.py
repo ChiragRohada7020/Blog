@@ -285,6 +285,25 @@ def post_paragraphs(post):
     return raw.split("\n") if raw else [""]
 
 
+# The inline editor decorates every editable block with a drag handle and a
+# delete button, inserted *inside* the block element. Older saves captured the
+# block's innerHTML wholesale, so those buttons were written to the database and
+# rendered as stray glyphs in published posts. Strip them on the way in, and
+# again on the way out so already-stored posts render clean.
+_EDITOR_CHROME_RE = re.compile(
+    r"<button\b[^>]*\bclass\s*=\s*\"[^\"]*\bblock-(?:handle|remove)\b[^\"]*\"[^>]*>"
+    r".*?</button>",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
+def strip_editor_chrome(html):
+    """Remove the inline editor's own buttons from stored post HTML."""
+    if not html:
+        return ""
+    return _EDITOR_CHROME_RE.sub("", html).strip()
+
+
 def blocks_from_post(post):
     """Body content as an ordered list of blocks.
 
@@ -294,7 +313,20 @@ def blocks_from_post(post):
     """
     stored = post.get("blocks")
     if stored:
-        return list(stored)
+        cleaned = []
+        for item in stored:
+            if not isinstance(item, dict):
+                continue
+            if item.get("type") == "text":
+                html = strip_editor_chrome(item.get("html"))
+                if html:
+                    cleaned.append({"type": "text", "html": html})
+            elif item.get("type") == "image" and item.get("ref"):
+                cleaned.append({"type": "image", "ref": item["ref"]})
+        if cleaned:
+            return cleaned
+        # Every block was editor chrome or empty, so fall through and rebuild
+        # from body1 rather than rendering a blank post.
 
     blocks = []
     if post.get("img1"):
@@ -324,7 +356,7 @@ def clean_blocks(raw):
             continue
         kind = item.get("type")
         if kind == "text":
-            html = (item.get("html") or "").strip()
+            html = strip_editor_chrome(item.get("html"))
             if html:
                 blocks.append({"type": "text", "html": html})
         elif kind == "image":

@@ -310,21 +310,38 @@
 
   /* ---------------------------------------------------------------- save */
 
+  /* `decorate()` appends the drag handle and the delete button *inside* the
+   * block, so reading `innerHTML` directly persists the editor's own UI into
+   * the post. That is how stray ☰ and × glyphs ended up stored in the
+   * database. Clone the block, drop the chrome, then read the clone.
+   */
+  function contentHtml(el) {
+    if (!el) return "";
+    var clone = el.cloneNode(true);
+    var chrome = clone.querySelectorAll(".block-handle, .block-remove");
+    Array.prototype.forEach.call(chrome, function (node) {
+      node.parentNode.removeChild(node);
+    });
+    return clone.innerHTML.trim();
+  }
+
   function collect() {
     var blocks = [];
     Array.prototype.forEach.call(
       body.querySelectorAll(".post-block"),
       function (el) {
         if (el.getAttribute("data-type") === "text") {
-          blocks.push({ type: "text", html: el.innerHTML.trim() });
+          var html = contentHtml(el);
+          // A block that held nothing but a button is not content.
+          if (html) blocks.push({ type: "text", html: html });
         } else {
           blocks.push({ type: "image", ref: el.getAttribute("data-ref") });
         }
       }
     );
     return {
-      heading: title ? title.innerHTML.trim() : "",
-      discription: standfirst ? standfirst.innerHTML.trim() : "",
+      heading: contentHtml(title),
+      discription: contentHtml(standfirst),
       blocks: blocks,
     };
   }

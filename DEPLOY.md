@@ -58,7 +58,7 @@ In the Vercel dashboard: **Project → Settings → Environment Variables**.
 | `TELEGRAM_CHAT_ID` | from `getUpdates` above |
 | `ADMIN_USERNAME` | username for the sign-in page at `/login` |
 | `ADMIN_PASSWORD` | password for the same page — use a long random string |
-| `SITE_URL` | public address of the site, e.g. `https://your-domain.vercel.app`. Used for canonical links, Open Graph tags and `sitemap.xml`. Optional — falls back to the request host. |
+| `SITE_URL` | public address of the site, `https://blog.rohadas.in`. Used for canonical links, Open Graph tags and `sitemap.xml`. Optional — falls back to the request host. |
 | `TWITTER_HANDLE` | your X/Twitter handle without the `@`, for `twitter:creator`. Optional. |
 
 Editing is gated behind a session login at **`/login`**. If `ADMIN_USERNAME` /
@@ -116,7 +116,7 @@ Set **`SITE_URL`** so the canonical, Open Graph and sitemap URLs are absolute an
 stable. Without it they fall back to the request host, which is correct on your
 production domain but not on preview deployments.
 
-After deploying, submit `https://your-domain/sitemap.xml` in
+After deploying, submit `https://blog.rohadas.in/sitemap.xml` in
 [Google Search Console](https://search.google.com/search-console).
 
 
@@ -164,6 +164,52 @@ python -m venv .venv
 pip install -r requirements.txt
 python app.py               # http://127.0.0.1:5000
 ```
+
+## Pointing blog.rohadas.in at Vercel
+
+1. **Add the domain in Vercel** — Project → **Settings → Domains → Add**, and
+   enter `blog.rohadas.in`.
+
+2. **Create the DNS record** wherever DNS for `rohadas.in` is managed. Vercel
+   shows the exact value on that Domains screen. Note that **each project gets
+   its own unique CNAME target** (something like
+   `d1d4fc829fe7bc7c.vercel-dns-017.com`) — copy it from there rather than
+   reusing a value you have seen elsewhere.
+
+   | Type | Name | Value |
+   | --- | --- | --- |
+   | `CNAME` | `blog` | the target Vercel shows for this project |
+
+   Subdomains use a **CNAME**; only apex domains use an **A** record. Because
+   `blog` is a subdomain, this adds one record and leaves everything else on
+   `rohadas.in` alone — including any **MX records for email**.
+
+3. **Set `SITE_URL`** to `https://blog.rohadas.in` in Vercel's environment
+   variables, so canonical links, Open Graph tags and the sitemap all use the
+   real domain. It is already set in the local `.env`.
+
+4. **Wait for the certificate.** Vercel issues TLS automatically once DNS
+   resolves. Usually a few minutes; DNS propagation can take longer.
+
+5. **Check it:**
+   - `https://blog.rohadas.in/robots.txt` → should say
+     `Sitemap: https://blog.rohadas.in/sitemap.xml`
+   - `https://blog.rohadas.in/sitemap.xml` → every `<loc>` should start with
+     `https://blog.rohadas.in`
+   - The page source should show
+     `<link rel="canonical" href="https://blog.rohadas.in/...">`
+
+6. **Submit the sitemap** in
+   [Google Search Console](https://search.google.com/search-console), creating
+   a property for `blog.rohadas.in`.
+
+### Optional: redirect the apex domain
+
+If you want `rohadas.in` to send visitors to the blog, add it to the same Vercel
+project and set it to **redirect** to `blog.rohadas.in`
+(Settings → Domains → Edit → Redirect). If `rohadas.in` already serves something
+else, leave it as it is — the CNAME above does not affect it.
+
 
 ## Limits you need to know
 

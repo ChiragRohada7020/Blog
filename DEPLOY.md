@@ -339,6 +339,87 @@ type from the file's magic bytes and forces `Content-Disposition: inline`.
 Mocked tests did not catch this — only a real request did.
 
 
+## The inline editor wrote its own buttons into posts
+
+The worst bug found after launch, because it was silent and only showed up in
+published content.
+
+**Symptom.** The post at `/blog/investment-life` contained **43 `☰` glyphs and 43
+`×` glyphs** scattered through the body — one pair per block.
+
+**Cause.** `decorate()` in `public/static/js/post-editor.js` inserts a drag handle
+and a delete button **inside** each `.post-block` element:
+
+```js
+block.appendChild(handle);
+block.appendChild(remove);
+```
+
+The save path then read the block's `innerHTML` wholesale:
+
+```js
+blocks.push({ type: "text", html: el.innerHTML.trim() });   // includes the buttons
+```
+
+So every save serialised the editor's own UI into the database. `clean_blocks()`
+only discarded *empty* blocks, so the buttons survived. `blocks_from_post()` then
+returned the stored blocks verbatim and they rendered on the public page.
+
+**Fix, in three layers:**
+
+1. `post-editor.js` — `contentHtml()` clones the block, removes
+   `.block-handle` / `.block-remove` from the clone, and serialises that. A block
+   left empty by the strip is not sent.
+2. `app.py` → `strip_editor_chrome()` — a server-side regex applied in
+   `clean_blocks()`, so a misbehaving client cannot store the buttons either.
+3. `app.py` → `blocks_from_post()` — the same strip on the **read** path, so posts
+   already corrupted render cleanly with no migration.
+
+**Data repair.** `investment-life`'s stored `blocks` had been wrecked twice over:
+43 of its 44 blocks held editor buttons, and the editor had split the HTML at
+every newline, shattering each `<ul>` into `<ul></ul>`, orphan `<li></li>` and a
+detached `<p>`. It was rebuilt from the intact `body1` — split on **blank lines**
+(not single newlines, which is what `post_paragraphs()` does) so the lists stay
+whole. 44 blocks became 14.
+
+**Still broken in that post:** its two images, `img1` = `Ek_onkar` and `m-img` =
+`io`, do not exist in `public/static/images/post_images/`, so both 404. Re-upload
+them through the inline editor, which now stores a `tg:` reference.
+
+**Regression tests.** `EditorChromeTests` in `tests/test_media.py` covers the
+strip, the button-only block, the read-path clean-up, the body1 fallback, and
+that a corrupted post renders without the glyphs.
+
+
+## Content repairs applied to the existing posts
+
+Applied directly to MongoDB. A JSON backup of both collections was written to
+`%TEMP%\posts-backup-<timestamp>.json` before any write.
+
+| Post | Repair |
+| --- | --- |
+| `matheran-1` | `in itself.The only way` → `in itself. The only way`; `visiting the Charlotte Lake` → `visiting Charlotte Lake`; description given a closing full stop |
+| `pune-shanivar-vada` | description ended with a stray `"` — removed |
+| `goa-19-2024` | `💆&zwj;♂️` used the HTML entity for the joiner, so the emoji could split into two glyphs — replaced with a real U+200D; trailing `&nbsp;</p>` padding removed |
+| `investment-life` | `blocks` rebuilt from `body1` (44 → 14); see the section above |
+| `maker_mela1` | `body1` ended mid-sentence (`Overall, participating an`) and repeated the last two paragraphs of `body2` — truncated where `body2` takes over, and a missing full stop added after `change the world` |
+| `taarit-1` | description given a closing full stop |
+| `taarit_api_1` | two solid walls of text broken at sentence boundaries — 3 paragraphs in `body1`, 4 in `body2` |
+
+**`heading2` is the "Click to see →" link**, rendered by `blog.html`. Four posts
+held something that was not a URL, so they published a broken link: `matheran-1`
+held the word `hello`, `pune-shanivar-vada` held `cant rule in`, and
+`goa-19-2024` and `investment-life` held their own titles. All four were cleared,
+which removes the broken link. The three real ones — `taarit-1`,
+`maker_mela1`, `taarit_api_1` — were kept.
+
+**Note on emoji.** The emoji themselves were never corrupted. `🌴✨`, `🚆`, `🍻`,
+`🎰`, `💃`, `🥥` and the rest are stored as valid UTF-8 (U+1F334, U+2728, …). The
+garbled `≡ƒî┤Γ£¿` seen in a Windows terminal is that UTF-8 being rendered through
+the legacy cp437 console code page — a display artefact, not the data. If emoji
+ever look wrong **in a browser**, check the response's `charset` instead.
+
+
 ## Pre-existing issues
 
 Fixed during the Vercel migration:

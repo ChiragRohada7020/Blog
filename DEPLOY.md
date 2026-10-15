@@ -167,31 +167,76 @@ python app.py               # http://127.0.0.1:5000
 
 ## Pointing blog.rohadas.in at Vercel
 
-1. **Add the domain in Vercel** — Project → **Settings → Domains → Add**, and
-   enter `blog.rohadas.in`.
+`rohadas.in` is registered at **Hostinger** and currently uses its nameservers
+(`pixel.dns-parking.com`, `byte.dns-parking.com`). There are two ways to point
+the subdomain at Vercel — pick **one**, not both.
 
-2. **Create the DNS record** wherever DNS for `rohadas.in` is managed. Vercel
-   shows the exact value on that Domains screen. Note that **each project gets
-   its own unique CNAME target** (something like
-   `d1d4fc829fe7bc7c.vercel-dns-017.com`) — copy it from there rather than
-   reusing a value you have seen elsewhere.
+### Where the subdomain is created: always Vercel
 
-   | Type | Name | Value |
-   | --- | --- | --- |
-   | `CNAME` | `blog` | the target Vercel shows for this project |
+**Add `blog.rohadas.in` under Project → Settings → Domains → Add.** Vercel then
+owns the hostname and creates the DNS record for it. Nothing needs to be created
+at Hostinger first.
 
-   Subdomains use a **CNAME**; only apex domains use an **A** record. Because
-   `blog` is a subdomain, this adds one record and leaves everything else on
-   `rohadas.in` alone — including any **MX records for email**.
+Do **not** use Hostinger's **Domains → Subdomains** screen. That feature points a
+subdomain at *Hostinger* hosting — it provisions a folder and an `A` record aimed
+at a Hostinger IP. With the site running on Vercel that record conflicts and
+surfaces as **Invalid Configuration** on Vercel's Domains screen. Only the *DNS
+Zone Editor* is ever relevant at Hostinger, and only for option A below.
 
-3. **Set `SITE_URL`** to `https://blog.rohadas.in` in Vercel's environment
+### Option A — CNAME (least invasive)
+
+Keep Hostinger's nameservers and add a single record in Hostinger's **DNS Zone
+Editor**:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| `CNAME` | `blog` | the unique target Vercel shows for this project |
+
+**Each project gets its own unique CNAME target** (something like
+`d1d4fc829fe7bc7c.vercel-dns-017.com`) — copy it from that Domains screen rather
+than reusing a value seen elsewhere.
+
+Subdomains use a **CNAME**; only apex domains use an **A** record. Because `blog`
+is a subdomain, this adds one record and leaves everything else on `rohadas.in`
+alone — including any **MX records for email**.
+
+### Option B — Vercel nameservers (the whole zone moves to Vercel)
+
+At Hostinger: **DNS → rohadas.in → DNS / Nameservers tab → Change Nameservers →
+"Change nameservers"**, then enter:
+
+```
+ns1.vercel-dns.com
+ns2.vercel-dns.com
+```
+
+This delegates the **entire zone** to Vercel, so:
+
+- No CNAME is needed — apex and first-level subdomain records are created
+  automatically, and wildcard domains become possible.
+- **Every existing record must also exist in Vercel.** MX and TXT records are
+  *not* copied across; on a domain with email, mail would stop arriving.
+  `rohadas.in` has **no MX and no TXT records**
+  (`nslookup -type=MX rohadas.in` returns only the SOA), so nothing is lost here
+  — but re-check this before doing it on any other domain.
+- The apex parking page (`2.57.91.91`) stops resolving — see "redirect the apex
+  domain" below.
+- All later DNS edits happen in **Vercel → Settings → Domains → DNS Records**.
+  Hostinger's DNS editor becomes inert.
+- Hostinger advises allowing up to 24 hours to propagate; a few hours is typical,
+  and the site can be unreachable during the move.
+
+### Then, either way
+
+1. **Set `SITE_URL`** to `https://blog.rohadas.in` in Vercel's environment
    variables, so canonical links, Open Graph tags and the sitemap all use the
-   real domain. It is already set in the local `.env`.
+   real domain. It is already set in the local `.env`, but `.env` is
+   git-ignored — Vercel will not see it until you add it there too.
 
-4. **Wait for the certificate.** Vercel issues TLS automatically once DNS
+2. **Wait for the certificate.** Vercel issues TLS automatically once DNS
    resolves. Usually a few minutes; DNS propagation can take longer.
 
-5. **Check it:**
+3. **Check it:**
    - `https://blog.rohadas.in/robots.txt` → should say
      `Sitemap: https://blog.rohadas.in/sitemap.xml`
    - `https://blog.rohadas.in/sitemap.xml` → every `<loc>` should start with
@@ -199,7 +244,7 @@ python app.py               # http://127.0.0.1:5000
    - The page source should show
      `<link rel="canonical" href="https://blog.rohadas.in/...">`
 
-6. **Submit the sitemap** in
+4. **Submit the sitemap** in
    [Google Search Console](https://search.google.com/search-console), creating
    a property for `blog.rohadas.in`.
 
@@ -207,8 +252,12 @@ python app.py               # http://127.0.0.1:5000
 
 If you want `rohadas.in` to send visitors to the blog, add it to the same Vercel
 project and set it to **redirect** to `blog.rohadas.in`
-(Settings → Domains → Edit → Redirect). If `rohadas.in` already serves something
-else, leave it as it is — the CNAME above does not affect it.
+(Settings → Domains → Edit → Redirect).
+
+Under **option A** this is purely optional — `rohadas.in` keeps its current
+parking page, because a `blog` CNAME does not touch the apex. Under **option B**
+it is effectively required, since Vercel now controls the apex and the old
+parking page (`2.57.91.91`) no longer resolves.
 
 
 ## Limits you need to know
@@ -234,8 +283,10 @@ else, leave it as it is — the CNAME above does not affect it.
 python -m unittest discover -s tests -v
 ```
 
-20 tests covering the Telegram upload/serve path with the HTTP calls mocked,
-including that the bot token is never exposed to the browser.
+71 tests covering the Telegram upload/serve path with the HTTP calls mocked,
+including that the bot token is never exposed to the browser. They run against an
+in-memory `FakeDb`, so no MongoDB connection is needed and the whole suite
+finishes in well under a second.
 
 There is also a **live** check that talks to the real Telegram API — it catches
 a wrong token, a wrong chat id, or Telegram's actual response headers:

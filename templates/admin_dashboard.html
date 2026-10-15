@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Manage posts | Rohadas Blog</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/base.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/main.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/admin.css')}}"
+    />
+  </head>
+  <body>
+    <div class="admin-page">
+      <h1>Manage posts</h1>
+      <p class="admin-sub">
+        <strong>+ New post</strong> opens a blank post you can write straight
+        into. Use the arrows to change the order posts appear in on the site.
+      </p>
+
+      {% for category, posts in groups %}
+      <h2>
+        {{ 'Travel (lifestyle)' if category == 'lifestyle' else 'Work' }}
+      </h2>
+
+      <p style="margin-bottom: 1.6rem">
+        <a
+          class="admin-btn admin-btn-primary"
+          href="{{ url_for('AdminNew', category=category) }}"
+          >+ New post</a
+        >
+      </p>
+
+      {% if posts %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>URL slug</th>
+            <th>Date</th>
+            <th>Order</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in posts %}
+          <tr>
+            <td>
+              {% if post.get('m-img') %}
+              <img src="{{ media_url(post['m-img']) }}" alt="" />
+              {% else %}
+              &mdash;
+              {% endif %}
+            </td>
+            <td>{{ post.get('heading', '(untitled)') }}</td>
+            <td><code>{{ post.get('url', '') }}</code></td>
+            <td>
+              {{ post['date'].strftime('%Y-%m-%d') if post.get('date') else '—' }}
+            </td>
+            <td>
+              <div class="admin-table-tools">
+                <form
+                  method="post"
+                  action="{{ url_for('AdminMove', category=category, url=post['url'], direction='up') }}"
+                >
+                  <input type="hidden" name="_csrf" value="{{ csrf_token() }}" />
+                  <button type="submit" title="Move up">&uarr;</button>
+                </form>
+                <form
+                  method="post"
+                  action="{{ url_for('AdminMove', category=category, url=post['url'], direction='down') }}"
+                >
+                  <input type="hidden" name="_csrf" value="{{ csrf_token() }}" />
+                  <button type="submit" title="Move down">&darr;</button>
+                </form>
+              </div>
+            </td>
+            <td>
+              <div class="admin-table-tools">
+                <a href="{{ url_for('Blog', url=post['url']) }}">View</a>
+                <a href="{{ url_for('Blog', url=post['url'], edit=1) }}">Edit</a>
+                <a
+                  href="{{ url_for('AdminEdit', category=category, url=post['url']) }}"
+                  >Settings</a
+                >
+                <form
+                  method="post"
+                  action="{{ url_for('AdminDelete', category=category, url=post['url']) }}"
+                  onsubmit="return confirm('Delete this post permanently?');"
+                >
+                  <input type="hidden" name="_csrf" value="{{ csrf_token() }}" />
+                  <button type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="admin-sub">No posts in this category yet.</p>
+      {% endif %} {% endfor %}
+
+      <div class="admin-actions">
+        <a class="admin-btn" href="{{ url_for('Home') }}">View site</a>
+        <a class="admin-btn" href="{{ url_for('Logout') }}">Sign out</a>
+      </div>
+    </div>
+  </body>
+</html>

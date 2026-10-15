@@ -1,0 +1,23 @@
+# Committed virtualenv (27 MB) - not needed on Vercel
+env/
+
+# Local virtualenv
+.venv/
+
+# Backup archive
+purblind/
+
+# Python bytecode
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Local logs
+*.log
+
+# Local secrets - set these in the Vercel dashboard instead
+.env
+
+# Never upload these
+.git/
+node_modules/

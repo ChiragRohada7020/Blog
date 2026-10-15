@@ -3,14 +3,7 @@
   <head>
     <!--- basic page needs
     ================================================== -->
-    <meta charset="utf-8" />
-    <title>Rohadas Blog</title>
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-
-    <!-- mobile specific metas
-    ================================================== -->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% include 'seo_head.html' %}
 
     <!-- CSS
     ================================================== -->
@@ -26,17 +19,16 @@
       rel="stylesheet"
       href="{{url_for('static',filename='css/main.css')}}"
     />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/site.css')}}"
+    />
 
     <!-- script
     ================================================== -->
     <!-- <script src="{{url_for('static',filename='js/modernizr.js')}}"></script> -->
 
-    <!-- favicons
-    ================================================== -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link rel="manifest" href="site.webmanifest" />
+    <!-- icons are declared in seo_head.html -->
   </head>
 
   <body>
@@ -50,15 +42,17 @@
       </div>
     </div>
 
+    <h1 class="sr-only">Travel posts &mdash; {{ site_name }}</h1>
+
     <div id="top" class="s-wrap site-wrapper">
       <!-- site header
         ================================================== -->
       <header class="s-header">
         <div class="header__top">
           <div class="header__logo">
-            <h1 style="color: white">
+            <div class="site-logo" style="color: white">
               Roh<span style="color: red">a</span>das
-            </h1>
+            </div>
           </div>
         </div>
         <!-- end header__top -->
@@ -159,9 +153,16 @@
             {% for item in data%}
 
             <article class="masonry__brick entry format-standard animate-this">
+              {% if is_admin %}
+              <a class="admin-inline" href="{{ url_for('AdminEdit', category='lifestyle', url=item['url']) }}">Edit</a>
+              {% endif %}
               <div class="entry__thumb">
                 <a href=/blog/{{item['url']}} class="entry__thumb-link">
-                  <img src="{{url_for('static',filename='images/post_images/'+item['m-img']+'.jpg')}}" />
+                  <img
+                    src="{{ media_url(item['m-img']) }}"
+                    alt="{{ item['heading'] }}"
+                    loading="lazy"
+                  />
                 </a>
               </div>
 
@@ -288,5 +289,6 @@
           });
       }
     </script>
+{% include 'admin_toolbar.html' %}
   </body>
 </html>

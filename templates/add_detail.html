@@ -23,6 +23,7 @@
                 <p>Please fill out all the fields.</p>
               </div>
               <form action="{{ url_for('Add_blog') }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="{{ csrf_token() }}" />
                 <div class="lg:col-span-2">
                   <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
                     <div class="md:col-span-5">
@@ -31,8 +32,8 @@
                     </div>
 
                     <div class="md:col-span-5">
-                      <label for="description">Description</label>
-                      <input type="text" name="description" id="description" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="Description" />
+                      <label for="discription">Description</label>
+                      <input type="text" name="discription" id="discription" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="Description" />
                     </div>
 
                     <!-- Replace input with textarea for Body1 -->

@@ -4,11 +4,33 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>{{ heading|default('Page Not Found', true) }} | Rohadas Blog</title>
     <link
       rel="stylesheet"
       href="{{url_for('static',filename='error/error.css')}}"
     />
+    <style>
+      .error-message {
+        font-size: 1.6rem;
+        opacity: 0.85;
+        margin: 0.8rem auto 2.4rem;
+        max-width: 46rem;
+        text-align: center;
+      }
+      .error-home {
+        display: inline-block;
+        padding: 1.2rem 2.8rem;
+        border: 1px solid currentColor;
+        border-radius: 4px;
+        font-size: 1.5rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-decoration: none;
+      }
+      .error-home:hover {
+        opacity: 0.7;
+      }
+    </style>
   </head>
   <body>
     <div></div>
@@ -73,6 +95,10 @@
       </defs>
     </svg>
 
-    <h2>Page Not Found</h2>
+    <h2>{{ heading|default('Page Not Found', true) }}</h2>
+    <p class="error-message">
+      {{ message|default('The page you are looking for does not exist or has been moved.', true) }}
+    </p>
+    <p><a class="error-home" href="{{ url_for('Home') }}">Back to home</a></p>
   </body>
 </html>

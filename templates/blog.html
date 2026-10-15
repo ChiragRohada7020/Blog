@@ -1,57 +1,338 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rohadas Blogs</title>
-    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
-    <style>
-        /* Style for space between paragraphs */
-        .blog-paragraph {
-            margin-bottom: 20px;
+<html class="no-js" lang="en">
+  <head>
+    {% include 'seo_head.html' %}
+
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/base.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/vendor.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/main.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/site.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/post.css')}}"
+    />
+
+    <!-- icons are declared in seo_head.html -->
+  </head>
+
+  <body>
+    <div id="preloader">
+      <div id="loader" class="dots-fade">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div id="top" class="s-wrap site-wrapper">
+      <!-- site header
+        ================================================== -->
+      <header class="s-header">
+        <div class="header__top">
+          <div class="header__logo">
+            <div class="site-logo" style="color: white">
+              Roh<span style="color: red">a</span>das
+            </div>
+          </div>
+        </div>
+        <!-- end header__top -->
+
+        <nav class="header__nav-wrap">
+          <ul class="header__nav">
+            <li><a href="{{ url_for('Home') }}" title="Home">Home</a></li>
+            <li class="has-children">
+              <a href="#0" title="Categories">Categories</a>
+              <ul class="sub-menu">
+                <li><a href="{{ url_for('Travel') }}">Travel</a></li>
+                <li><a href="{{ url_for('Work') }}">Work</a></li>
+              </ul>
+            </li>
+            <li><a href="{{ url_for('About') }}" title="About">About</a></li>
+          </ul>
+          <!-- end header__nav -->
+
+          <div class="">
+            <form
+              action="{{ url_for('Email') }}"
+              method="post"
+              class="flex flex-col"
+            >
+              {% with messages = get_flashed_messages() %}
+              <input
+                type="email"
+                name="email"
+                placeholder="Subscribe For NewsLetter"
+                style="color: white"
+                width=""
+                required
+              />
+              {% if messages %}
+              <button type="submit" style="background-color: gray">
+                Congrats
+              </button>
+              {% else %}
+              <button type="submit" style="background-color: gray">
+                Submit
+              </button>
+              {% endif %} {% endwith %}
+            </form>
+          </div>
+
+          <ul class="header__social">
+            <li class="ss-instagram">
+              <a href="https://instagram.com/chirag__rohada?igshid=ZDdkNTZiNTM=">
+                <span class="screen-reader-text">Instagram</span>
+              </a>
+            </li>
+            <li class="ss-twitter">
+              <a href="https://twitter.com/rohada_chirag?t=XazXggccU2NlEbIqK2MamQ&s=08">
+                <span class="screen-reader-text">Twitter</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- end header__nav-wrap -->
+
+        <a href="#0" class="header__menu-toggle">
+          <span>Menu</span>
+        </a>
+      </header>
+      <!-- end s-header -->
+
+      <!-- search
+        ================================================== -->
+      <div class="s-search">
+        <div class="search-block">
+          <form role="search" method="get" class="search-form" action="#">
+            <label>
+              <span class="hide-content">Search for:</span>
+              <input
+                id="searchInput"
+                type="search"
+                class="search-field"
+                placeholder="Type Keywords"
+                value=""
+                name="s"
+                title="Search for:"
+                autocomplete="off"
+                oninput="fetchData()"
+              />
+            </label>
+            <input type="submit" class="search-submit" value="Search" />
+            <ul id="searchResults" style="padding: 40px"></ul>
+          </form>
+
+          <a href="#0" title="Close Search" class="search-close">Close</a>
+        </div>
+        <!-- end search-block -->
+
+        <a href="#0" class="search-trigger">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: rgba(0, 0, 0, 1)"
+          >
+            <path
+              d="M10,18c1.846,0,3.543-0.635,4.897-1.688l4.396,4.396l1.414-1.414l-4.396-4.396C17.365,13.543,18,11.846,18,10 c0-4.411-3.589-8-8-8s-8,3.589-8,8S5.589,18,10,18z M10,4c3.309,0,6,2.691,6,6s-2.691,6-6,6s-6-2.691-6-6S6.691,4,10,4z"
+            ></path>
+          </svg>
+          <span>Search</span>
+        </a>
+        <span class="search-line"></span>
+      </div>
+      <!-- end s-search -->
+
+      <!-- site content
+        ================================================== -->
+      <div class="s-content">
+        <article class="post">
+          <header class="post-head">
+            <a class="post-back" href="{{ url_for('Home') }}"
+              >&larr; All posts</a
+            >
+
+            <p class="post-cat">
+              {{ 'Travel' if category == 'lifestyle' else 'Work' }}
+            </p>
+
+            <h1 class="post-title">{{ data['heading'] }}</h1>
+
+            <p class="post-meta">
+              By <strong>{{ site_author }}</strong>
+              {% if data.get('date') %} &middot;
+              <time datetime="{{ data['date'].isoformat() }}"
+                >{{ data['date'].strftime("%B %d, %Y") }}</time
+              >
+              {% endif %}
+            </p>
+
+            {% if data.get('heading2') %}
+            <a
+              class="post-link"
+              href="{{ data['heading2'] }}"
+              target="_blank"
+              rel="noopener"
+              >Click to see &rarr;</a
+            >
+            {% endif %}
+          </header>
+
+          {% if data.get('m-img') %}
+          <figure class="post-cover">
+            <img
+              src="{{ media_url(data['m-img']) }}"
+              alt="{{ data['heading'] }}"
+            />
+          </figure>
+          {% endif %} {% if data.get('discription') %}
+          <div class="post-standfirst">{{ data['discription'] | safe }}</div>
+          {% endif %}
+
+          <div class="post-body" id="post-body">
+            {% for block in blocks %} {% if block['type'] == 'text' %}
+            <div class="post-block" data-type="text">
+              {{ block['html'] | safe }}
+            </div>
+            {% else %}
+            <figure
+              class="post-block post-block-image"
+              data-type="image"
+              data-ref="{{ block['ref'] }}"
+            >
+              <img src="{{ media_url(block['ref']) }}" alt="" />
+            </figure>
+            {% endif %} {% endfor %} {% if not blocks and is_admin %}
+            <p class="inline-empty">
+              Nothing here yet. Switch on editing and add a paragraph or an
+              image.
+            </p>
+            {% endif %}
+          </div>
+
+          {% if is_admin %}
+          <div class="inline-add">
+            <button type="button" id="inline-add-text">+ Paragraph</button>
+            <button type="button" id="inline-add-image">+ Image</button>
+            <input type="file" id="inline-file" accept="image/*" hidden />
+          </div>
+          {% endif %}
+
+          <div class="post-foot">
+            <a class="post-back" href="{{ url_for('Home') }}"
+              >&larr; All posts</a
+            >
+            <a
+              class="post-back"
+              href="{{ url_for('Travel') if category == 'lifestyle' else url_for('Work') }}"
+            >
+              More {{ 'Travel' if category == 'lifestyle' else 'Work' }}
+            </a>
+          </div>
+        </article>
+      </div>
+      <!-- end s-content -->
+
+      <!-- footer
+        ================================================== -->
+      <footer class="s-footer">
+        <div class="row">
+          <div class="column large-full footer__content">
+            <div class="footer__copyright">
+              <span>&copy; Copyright Rohadas Blog</span>
+              <span>
+                <a href="{{ url_for('About') }}">Chirag Rohada</a></span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="go-top">
+          <a class="smoothscroll" title="Back to Top" href="#top"></a>
+        </div>
+      </footer>
+    </div>
+    <!-- end s-wrap -->
+
+    {% if is_admin %}
+    <button type="button" class="inline-toggle" id="inline-toggle">
+      Edit this page
+    </button>
+
+    <div class="inline-bar" id="inline-bar" hidden>
+      <strong>Editing</strong>
+      <span class="inline-status" id="inline-status">No changes yet</span>
+      <span class="inline-bar-spacer"></span>
+      <button type="button" class="inline-save" id="inline-save">Save</button>
+      <button type="button" id="inline-exit">Exit</button>
+    </div>
+    {% endif %} {% include 'admin_toolbar.html' %}
+
+    <!-- Java Script
+    ================================================== -->
+    <script src="{{url_for('static',filename='js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/plugins.js')}}"></script>
+    <script src="{{url_for('static',filename='js/main.js')}}"></script>
+
+    {% if is_admin %}
+    <script>
+      window.POST_EDITOR = {
+        saveUrl: "{{ url_for('AdminSave', category=category, url=data['url']) }}",
+        uploadUrl: "{{ url_for('AdminUpload') }}",
+        csrf: "{{ csrf_token() }}",
+        slug: "{{ data['url'] }}",
+        // Set when arriving from "+ New post", so the page opens ready to type.
+        autoEdit: {{ 'true' if request.args.get('edit') else 'false' }}
+      };
+    </script>
+    <script src="{{ url_for('static', filename='js/post-editor.js') }}"></script>
+    {% endif %}
+
+    <script>
+      function fetchData() {
+        var searchInput = document.getElementById("searchInput");
+        var searchResults = document.getElementById("searchResults");
+
+        searchResults.innerHTML = "";
+
+        if (!searchInput.value) {
+          return;
         }
-    </style>
-</head>
-<body>
-<div class="xl:mx-60 lg:mx-40 2xl:mx-80 md:mx-20 mx-5 mt-32 flex flex-col gap-5 mb-32 transition duration-1000">
-    <div class="text-start">
-        <h1 class="font-bold text-5xl font-serif">{{ data['heading'] }}</h1>
-    </div>
-    <div class="text-start flex flex-col gap-2">
-        <div class="">
-            <h1 class="font-medium font-sans" id="discription">
-                <a href={{ data['heading2'] }} class="text-green-500">Click to see</a>
-            </h1>
-        </div>
-        <div>
-            <h1 class="text-xs" id="discription">
-                By <span class="font-bold">Chirag Rohada</span> | {{ data["date"].strftime("%B %d, %Y") }}
-            </h1>
-        </div>
-    </div>
-    <div>
-        {% if data['img1'] %}
-            <img src="{{ url_for('static', filename='images/post_images/' + data['img1'] + '.jpg') }}" alt="">
-        {% endif %}
-    </div>
-    <div class="flex flex-col gap-6 font-sans space-y-5 mt-6 text-lg">
-        <discription class="text-xl font-semibold">
-            <p>{{ data['discription'] | safe }}</p>
-        </discription>
-        <!-- Displaying paragraphs of body1 -->
-        <div>
-            {% for paragraph in data['body1'] %}
-                <p class="blog-paragraph">{{ paragraph | safe  }}</p>
-            {% endfor %}
-        </div>
-        <p>{{ data['body2'] | safe  }}</p>
-    </div>
-    <div>
-        {% if data['img2'] %}
-            <img src="{{ url_for('static', filename='images/post_images/' + data['img2'] + '.jpg') }}" alt="">
-        {% endif %}
-    </div>
-</div>
-</body>
+
+        fetch("/search/" + encodeURIComponent(searchInput.value))
+          .then(function (response) { return response.json(); })
+          .then(function (data) {
+            searchResults.innerText = "";
+            data.forEach(function (result) {
+              var newListItem = document.createElement("li");
+              newListItem.setAttribute(
+                "style",
+                "color: red; font-size: 16px;list-style-type:none;"
+              );
+              var newAnchor = document.createElement("a");
+              newAnchor.setAttribute("href", "/blog/" + result["url"]);
+              newAnchor.textContent = result["heading"];
+              newListItem.appendChild(newAnchor);
+              searchResults.appendChild(newListItem);
+            });
+          });
+      }
+    </script>
+  </body>
 </html>
+
+
+

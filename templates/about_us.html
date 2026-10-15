@@ -1,35 +1,321 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="no-js" lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us</title>
-    <link
-      href="{{url_for('static',filename='dist/output.css')}}"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div
-      class="2xl:px-40 lg:px-32 md:px-24 sm:px-10 px-5 mb-10 flex flex-col gap-10 mt-52 transition-all duration-700"
-    >
-      <div>
-        <h1 class="font-mono font-semibold text-6xl">About Us</h1>
-      </div>
-      <div class="bg-orange-100 container p-10 border rounded-lg shadow-md">
-        <div class="font-serif">
-          Welcome to <span class="font-semibold">Rohadas Blog</span> , a space where I share my personal experiences, thoughts.
+    {% include 'seo_head.html' %}
 
-          I created this blog to document my journey and connect with like-minded individuals who share my passions and interests. I believe that everyone has a story to tell, and I hope that my posts will inspire and encourage others to share their own experiences and perspectives.
-          
-          As for me, my name is <span class="font-semibold">Chirag Rohada</span>, and I'm a Entrepreneur . In my free time, I love to explore places.
-          
-          I believe that life is a journey, and we all have something to learn from each other. So, whether you're here to gain new insights, share your own experiences, or simply connect with others, I invite you to join me on this journey and become a part of the Rohadas community.
-          
-          Thank you for visiting my blog, and I hope you enjoy reading my posts as much as I enjoy writing them.
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='dist/output.css')}}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/base.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/vendor.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/main.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/site.css')}}"
+    />
+
+    <!-- icons are declared in seo_head.html -->
+
+    <style>
+      .about-page {
+        max-width: 78rem;
+        margin: 0 auto;
+        padding: 7rem 2rem 9rem;
+      }
+      .about-page p {
+        font-size: 1.8rem;
+        line-height: 1.85;
+        margin-bottom: 2.4rem;
+      }
+      .about-page h3 {
+        margin: 5rem 0 2rem;
+      }
+      .about-page ul {
+        list-style: none;
+        margin: 0 0 3rem 0;
+      }
+      .about-page ul li {
+        font-size: 1.8rem;
+        line-height: 1.85;
+        margin-bottom: 1.2rem;
+      }
+      .about-page ul li a {
+        border-bottom: 1px solid currentColor;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- preloader
+    ================================================== -->
+    <div id="preloader">
+      <div id="loader" class="dots-fade">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div id="top" class="s-wrap site-wrapper">
+      <!-- site header
+        ================================================== -->
+      <header class="s-header">
+        <div class="header__top">
+          <div class="header__logo">
+            <div class="site-logo" style="color: white">
+              Roh<span style="color: red">a</span>das
+            </div>
+          </div>
+        </div>
+        <!-- end header__top -->
+
+        <nav class="header__nav-wrap">
+          <ul class="header__nav">
+            <li><a href="{{ url_for('Home') }}" title="Home">Home</a></li>
+            <li class="has-children">
+              <a href="#0" title="Categories">Categories</a>
+              <ul class="sub-menu">
+                <li><a href="{{ url_for('Travel') }}">Travel</a></li>
+                <li><a href="{{ url_for('Work') }}">Work</a></li>
+              </ul>
+            </li>
+            <li class="current">
+              <a href="{{ url_for('About') }}" title="About">About</a>
+            </li>
+          </ul>
+          <!-- end header__nav -->
+
+          <div class="">
+            <form
+              action="{{ url_for('Email') }}"
+              method="post"
+              class="flex flex-col"
+            >
+              {% with messages = get_flashed_messages() %}
+              <input
+                type="email"
+                name="email"
+                placeholder="Subscribe For NewsLetter"
+                style="color: white"
+                width=""
+                required
+              />
+              {% if messages %}
+              <button type="submit" style="background-color: gray">
+                Congrats
+              </button>
+              {% else %}
+              <button type="submit" style="background-color: gray">
+                Submit
+              </button>
+              {% endif %} {% endwith %}
+            </form>
+          </div>
+
+          <ul class="header__social">
+            <li class="ss-instagram">
+              <a href="https://instagram.com/chirag__rohada?igshid=ZDdkNTZiNTM=">
+                <span class="screen-reader-text">Instagram</span>
+              </a>
+            </li>
+            <li class="ss-twitter">
+              <a href="https://twitter.com/rohada_chirag?t=XazXggccU2NlEbIqK2MamQ&s=08">
+                <span class="screen-reader-text">Twitter</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- end header__nav-wrap -->
+
+        <!-- menu toggle -->
+        <a href="#0" class="header__menu-toggle">
+          <span>Menu</span>
+        </a>
+      </header>
+      <!-- end s-header -->
+
+      <!-- search
+        ================================================== -->
+      <div class="s-search">
+        <div class="search-block">
+          <form role="search" method="get" class="search-form" action="#">
+            <label>
+              <span class="hide-content">Search for:</span>
+              <input
+                id="searchInput"
+                type="search"
+                class="search-field"
+                placeholder="Type Keywords"
+                value=""
+                name="s"
+                title="Search for:"
+                autocomplete="off"
+                oninput="fetchData()"
+              />
+            </label>
+            <input type="submit" class="search-submit" value="Search" />
+            <ul id="searchResults" style="padding: 40px"></ul>
+          </form>
+
+          <a href="#0" title="Close Search" class="search-close">Close</a>
+        </div>
+        <!-- end search-block -->
+
+        <!-- search modal trigger -->
+        <a href="#0" class="search-trigger">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: rgba(0, 0, 0, 1)"
+          >
+            <path
+              d="M10,18c1.846,0,3.543-0.635,4.897-1.688l4.396,4.396l1.414-1.414l-4.396-4.396C17.365,13.543,18,11.846,18,10 c0-4.411-3.589-8-8-8s-8,3.589-8,8S5.589,18,10,18z M10,4c3.309,0,6,2.691,6,6s-2.691,6-6,6s-6-2.691-6-6S6.691,4,10,4z"
+            ></path>
+          </svg>
+          <span>Search</span>
+        </a>
+        <span class="search-line"></span>
+      </div>
+      <!-- end s-search -->
+
+      <!-- site content
+        ================================================== -->
+      <div class="s-content">
+        <div class="row">
+          <div class="column large-full">
+            <div class="about-page">
+              <h1 class="display-1">About</h1>
+
+              <p class="lead">
+                Welcome to <strong>Rohadas Blog</strong> &mdash; a space where I
+                share my personal experiences, my thoughts, and the things I am
+                building.
+              </p>
+
+              <p>
+                I created this blog to document my journey and to connect with
+                like-minded people who share my passions and interests. I
+                believe everyone has a story worth telling, and I hope these
+                posts inspire you to share yours too.
+              </p>
+
+              <p>
+                My name is <strong>Chirag Rohada</strong>, and I am an
+                entrepreneur. In my free time I love to explore new places, so
+                you will find those stories under
+                <a href="{{ url_for('Travel') }}">Travel</a>, alongside the
+                projects I am working on under
+                <a href="{{ url_for('Work') }}">Work</a>.
+              </p>
+
+              <h3>What you will find here</h3>
+              <ul>
+                <li>
+                  <a href="{{ url_for('Travel') }}">Travel</a> &mdash; places I
+                  have been, and what I learned along the way.
+                </li>
+                <li>
+                  <a href="{{ url_for('Work') }}">Work</a> &mdash; the products,
+                  experiments and side projects I am building.
+                </li>
+              </ul>
+
+              <p>
+                I believe life is a journey, and we all have something to learn
+                from each other. So whether you are here to gain new insights,
+                to share your own experiences, or simply to connect, I invite
+                you to join me and become part of the Rohadas community.
+              </p>
+
+              <p>
+                Thank you for visiting, and I hope you enjoy reading these posts
+                as much as I enjoy writing them.
+              </p>
+
+              <p>
+                You can also reach me on
+                <a href="https://instagram.com/chirag__rohada?igshid=ZDdkNTZiNTM=">Instagram</a>
+                or
+                <a href="https://twitter.com/rohada_chirag?t=XazXggccU2NlEbIqK2MamQ&s=08">Twitter</a>,
+                or subscribe to the newsletter from the header above.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-      
+      <!-- end s-content -->
+
+      <!-- footer
+        ================================================== -->
+      <footer class="s-footer">
+        <div class="row">
+          <div class="column large-full footer__content">
+            <div class="footer__copyright">
+              <span>&copy; Copyright Rohadas Blog</span>
+              <span>
+                <a href="{{ url_for('About') }}">Chirag Rohada</a></span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="go-top">
+          <a class="smoothscroll" title="Back to Top" href="#top"></a>
+        </div>
+      </footer>
+    </div>
+    <!-- end s-wrap -->
+
+    <!-- Java Script
+    ================================================== -->
+    <script src="{{url_for('static',filename='js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/plugins.js')}}"></script>
+    <script src="{{url_for('static',filename='js/main.js')}}"></script>
+    <script>
+      function fetchData() {
+        let searchInput = document.getElementById("searchInput");
+        let searchResults = document.getElementById("searchResults");
+
+        searchResults.innerHTML = "";
+
+        if (!searchInput.value) {
+          return;
+        }
+
+        fetch("/search/" + encodeURIComponent(searchInput.value))
+          .then((response) => response.json())
+          .then((data) => {
+            searchResults.innerText = "";
+            data.forEach((result) => {
+              const newListItem = document.createElement("li");
+              newListItem.setAttribute(
+                "style",
+                "color: red; font-size: 16px;list-style-type:none;"
+              );
+              const newAnchor = document.createElement("a");
+              newAnchor.setAttribute("href", "/blog/" + result["url"]);
+              newAnchor.textContent = result["heading"];
+              newListItem.appendChild(newAnchor);
+              searchResults.appendChild(newListItem);
+            });
+          });
+      }
+    </script>
+{% include 'admin_toolbar.html' %}
   </body>
 </html>
+
+

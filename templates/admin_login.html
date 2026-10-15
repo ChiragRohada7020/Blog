@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sign in | Rohadas Blog</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/base.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/main.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/admin.css')}}"
+    />
+  </head>
+  <body>
+    <div class="admin-login">
+      <form
+        method="post"
+        action="{{ url_for('Login') }}{% if request.args.get('next') %}?next={{ request.args.get('next') | urlencode }}{% endif %}"
+      >
+        <h1>Sign in</h1>
+        <p>Editing the blog is limited to the site owner.</p>
+
+        {% if error %}
+        <p class="admin-error">{{ error }}</p>
+        {% endif %}
+
+        <label for="username"
+          >Username
+          <input
+            id="username"
+            type="text"
+            name="username"
+            autocomplete="username"
+            required
+            autofocus
+          />
+        </label>
+
+        <label for="password"
+          >Password
+          <input
+            id="password"
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            required
+          />
+        </label>
+
+        <button class="admin-btn admin-btn-primary" type="submit">
+          Sign in
+        </button>
+
+        <a href="{{ url_for('Home') }}">&larr; Back to the blog</a>
+      </form>
+    </div>
+  </body>
+</html>

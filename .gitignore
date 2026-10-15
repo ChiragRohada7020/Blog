@@ -1,2 +1,14 @@
 node_modules
 k
+
+# local virtual environment created for running this project
+.venv
+__pycache__/
+*.pyc
+
+# local run logs
+server.out.log
+server.err.log
+
+# local secrets - real values live in the Vercel dashboard
+.env

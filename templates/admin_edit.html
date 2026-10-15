@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      {{ 'New post' if is_new else 'Edit: ' ~ post.get('heading', '') }} |
+      Rohadas Blog
+    </title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/base.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/main.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/admin.css')}}"
+    />
+  </head>
+  <body>
+    <div class="admin-page">
+      <h1>Post settings</h1>
+      <p class="admin-sub">
+        The title, intro and body are written directly on the post — open it and
+        press <strong>Edit this page</strong>. These are the settings that are
+        easier to change here.
+      </p>
+
+      {% if error %}
+      <p class="admin-error">{{ error }}</p>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}" />
+
+        <div class="admin-row">
+          <label for="heading"
+            >Title
+            <input
+              id="heading"
+              type="text"
+              name="heading"
+              value="{{ post.get('heading', '') }}"
+              required
+            />
+          </label>
+          <label for="url"
+            >URL slug
+            <input
+              id="url"
+              type="text"
+              name="url"
+              value="{{ post.get('url', '') }}"
+              placeholder="my-post-url"
+              required
+            />
+          </label>
+        </div>
+
+        <div class="admin-row">
+          <label for="date"
+            >Date
+            <input
+              id="date"
+              type="date"
+              name="date"
+              value="{{ post['date'].strftime('%Y-%m-%d') if post.get('date') else '' }}"
+            />
+          </label>
+          <label for="heading2"
+            >External link (the "Click to see" link)
+            <input
+              id="heading2"
+              type="text"
+              name="heading2"
+              value="{{ post.get('heading2', '') }}"
+              placeholder="https://…"
+            />
+          </label>
+        </div>
+
+        <label for="discription"
+          >Intro / description (HTML allowed)
+          <textarea id="discription" name="discription">{{ post.get('discription', '') }}</textarea>
+        </label>
+
+        <h2>Body paragraphs</h2>
+        <p class="admin-sub">
+          Use the arrows to move a paragraph, &times; to delete it, and
+          &ldquo;Add paragraph&rdquo; to create one.
+        </p>
+
+        <div id="paragraph-list">
+          {% for paragraph in paragraphs %}
+          <div class="admin-paragraph">
+            <textarea name="body1" rows="4">{{ paragraph }}</textarea>
+            <div class="admin-paragraph-tools">
+              <button type="button" data-para-action="up" title="Move up">
+                &uarr;
+              </button>
+              <button type="button" data-para-action="down" title="Move down">
+                &darr;
+              </button>
+              <button type="button" data-para-action="remove" title="Delete">
+                &times;
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <p style="margin-bottom: 3rem">
+          <button
+            class="admin-btn"
+            type="button"
+            data-para-action="add"
+          >
+            + Add paragraph
+          </button>
+        </p>
+
+        <label for="body2"
+          >Closing text (HTML allowed)
+          <textarea id="body2" name="body2">{{ post.get('body2', '') }}</textarea>
+        </label>
+
+        <h2>Images</h2>
+        <p class="admin-sub">
+          Uploading a file replaces the current image. Images are stored on
+          Telegram, so they must be under 4&nbsp;MB.
+        </p>
+
+        {% for field, input_name, label in [
+          ('m-img', 'm_img', 'Main image — the thumbnail shown on listing pages'),
+          ('img1', 'img1', 'First inline image — shown after the intro'),
+          ('img2', 'img2', 'Second inline image — shown at the end')] %}
+        <div class="admin-image">
+          <strong>{{ label }}</strong>
+          <div style="height: 1.2rem"></div>
+          {% if post.get(field) %}
+          <img src="{{ media_url(post[field]) }}" alt="" />
+          <label
+            style="
+              text-transform: none;
+              letter-spacing: normal;
+              font-weight: 400;
+              margin-bottom: 1.6rem;
+            "
+          >
+            <input
+              type="checkbox"
+              name="clear_{{ input_name }}"
+              value="1"
+              style="display: inline-block; width: auto; margin: 0 0.6rem 0 0"
+            />
+            Remove this image
+          </label>
+          {% else %}
+          <p class="admin-empty">No image yet.</p>
+          {% endif %}
+
+          <label
+            >{{ 'Replace image' if post.get(field) else 'Upload image' }}
+            <input type="file" name="{{ input_name }}" accept="image/*" />
+          </label>
+        </div>
+        {% endfor %}
+
+        <div class="admin-actions">
+          <button class="admin-btn admin-btn-primary" type="submit">
+            {{ 'Create post' if is_new else 'Save changes' }}
+          </button>
+          <a class="admin-btn" href="{{ url_for('AdminHome') }}">Cancel</a>
+          {% if not is_new %}
+          <a class="admin-btn" href="{{ url_for('Blog', url=post['url']) }}"
+            >View post</a
+          >
+          {% endif %}
+        </div>
+      </form>
+
+      {% if not is_new %}
+      <form
+        method="post"
+        action="{{ url_for('AdminDelete', category=category, url=post['url']) }}"
+        onsubmit="return confirm('Delete this post permanently?');"
+        style="margin-top: 2.4rem"
+      >
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}" />
+        <button class="admin-btn admin-btn-danger" type="submit">
+          Delete this post
+        </button>
+      </form>
+      {% endif %}
+    </div>
+
+    <template id="paragraph-template">
+      <div class="admin-paragraph">
+        <textarea name="body1" rows="4"></textarea>
+        <div class="admin-paragraph-tools">
+          <button type="button" data-para-action="up" title="Move up">
+            &uarr;
+          </button>
+          <button type="button" data-para-action="down" title="Move down">
+            &darr;
+          </button>
+          <button type="button" data-para-action="remove" title="Delete">
+            &times;
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      // Paragraphs are plain <textarea name="body1"> elements, so the order
+      // they appear in the DOM is the order Flask receives them in.
+      document.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-para-action]");
+        if (!button) return;
+        event.preventDefault();
+
+        var list = document.getElementById("paragraph-list");
+        var action = button.getAttribute("data-para-action");
+
+        if (action === "add") {
+          var node = document
+            .getElementById("paragraph-template")
+            .content.cloneNode(true);
+          list.appendChild(node);
+          var added = list.lastElementChild.querySelector("textarea");
+          if (added) added.focus();
+          return;
+        }
+
+        var row = button.closest(".admin-paragraph");
+        if (!row) return;
+
+        if (action === "up" && row.previousElementSibling) {
+          list.insertBefore(row, row.previousElementSibling);
+        } else if (action === "down" && row.nextElementSibling) {
+          list.insertBefore(row.nextElementSibling, row);
+        } else if (action === "remove") {
+          if (list.querySelectorAll(".admin-paragraph").length > 1) {
+            row.remove();
+          } else {
+            row.querySelector("textarea").value = "";
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+

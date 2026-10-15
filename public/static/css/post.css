@@ -1,0 +1,345 @@
+/* Styles for a single blog post, plus the inline editor that appears on it
+   for a signed-in admin. */
+
+.post {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 6rem 2rem 10rem;
+}
+
+/* ---- header ---- */
+.post-back {
+  display: inline-block;
+  margin-bottom: 3.2rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a8f98;
+  text-decoration: none;
+}
+.post-back:hover {
+  color: #14181f;
+}
+
+.post-cat {
+  margin-bottom: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e63946;
+}
+
+.post-title {
+  font-size: 4.4rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.8rem;
+}
+
+.post-meta {
+  font-size: 1.5rem;
+  color: #8a8f98;
+  margin-bottom: 1.6rem;
+}
+.post-meta strong {
+  color: #14181f;
+}
+
+.post-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #e63946;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+
+/* ---- cover ---- */
+.post-cover {
+  margin: 4rem 0;
+}
+.post-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* ---- standfirst / intro ---- */
+.post-standfirst {
+  margin: 3.2rem 0 4rem;
+  padding-left: 2.4rem;
+  border-left: 3px solid #e63946;
+  font-size: 2rem;
+  line-height: 1.6;
+  color: #3c4149;
+}
+
+/* ---- body blocks ---- */
+.post-body {
+  font-size: 1.9rem;
+  line-height: 1.85;
+  color: #22262d;
+}
+.post-block {
+  margin-bottom: 3.2rem;
+}
+.post-block:last-child {
+  margin-bottom: 0;
+}
+.post-block-image {
+  margin: 4.4rem 0;
+}
+.post-block-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.post-body p {
+  margin-bottom: 1.8rem;
+}
+.post-body p:last-child {
+  margin-bottom: 0;
+}
+.post-body h2,
+.post-body h3 {
+  margin: 4.4rem 0 1.6rem;
+  line-height: 1.25;
+}
+.post-body ul,
+.post-body ol {
+  margin: 0 0 2rem 2.4rem;
+}
+.post-body li {
+  margin-bottom: 0.8rem;
+}
+.post-body blockquote {
+  margin: 3.2rem 0;
+  padding-left: 2.4rem;
+  border-left: 3px solid #e3e6ea;
+  font-style: italic;
+  color: #5b616b;
+}
+.post-body a {
+  border-bottom: 1px solid currentColor;
+}
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* ---- footer nav ---- */
+.post-foot {
+  margin-top: 7rem;
+  padding-top: 3.2rem;
+  border-top: 1px solid #e3e6ea;
+  display: flex;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .post-title {
+    font-size: 3.2rem;
+  }
+  .post-standfirst {
+    font-size: 1.8rem;
+    padding-left: 1.6rem;
+  }
+  .post-body {
+    font-size: 1.8rem;
+  }
+}
+
+/* ==========================================================================
+   Inline editor
+   ========================================================================== */
+
+.inline-toggle {
+  position: fixed;
+  right: 2rem;
+  bottom: 7rem;
+  z-index: 9998;
+  padding: 1.2rem 2rem;
+  border: 0;
+  border-radius: 40px;
+  background: #e63946;
+  color: #fff;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+}
+.inline-toggle:hover {
+  background: #c92c39;
+}
+
+/* Save bar */
+.inline-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 2rem;
+  background: #14181f;
+  color: #fff;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 1.4rem;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
+}
+.inline-bar button {
+  padding: 0.9rem 1.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.inline-bar button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.inline-bar .inline-save {
+  border-color: #e63946;
+  background: #e63946;
+}
+.inline-bar .inline-save:hover {
+  background: #c92c39;
+}
+.inline-status {
+  color: #9aa1ab;
+}
+.inline-status.is-dirty {
+  color: #ffcf6b;
+}
+.inline-status.is-error {
+  color: #ff8f9a;
+}
+.inline-status.is-saved {
+  color: #7ee0a6;
+}
+.inline-bar-spacer {
+  flex: 1;
+}
+
+/* Editable regions */
+body.inline-editing [contenteditable="true"] {
+  outline: none;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.25);
+  transition: box-shadow 0.15s;
+}
+body.inline-editing [contenteditable="true"]:hover {
+  box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.4);
+}
+body.inline-editing [contenteditable="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.6);
+  background: #fffdfd;
+}
+
+/* Block chrome while editing */
+body.inline-editing .post-block {
+  position: relative;
+  padding: 0.6rem 0;
+}
+body.inline-editing .post-block.is-dragging {
+  opacity: 0.4;
+}
+body.inline-editing .post-block.drag-over {
+  box-shadow: inset 0 3px 0 0 #e63946;
+}
+
+.block-handle,
+.block-remove {
+  position: absolute;
+  top: -0.4rem;
+  z-index: 5;
+  display: none;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid #d5d9df;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #14181f;
+  cursor: pointer;
+}
+.block-handle {
+  left: -3.8rem;
+  cursor: grab;
+}
+.block-handle:active {
+  cursor: grabbing;
+}
+.block-remove {
+  right: -3.8rem;
+  color: #b91c1c;
+}
+body.inline-editing .post-block .block-handle,
+body.inline-editing .post-block .block-remove {
+  display: block;
+}
+
+/* Image blocks in edit mode get a drop target feel */
+body.inline-editing .post-block-image {
+  padding: 1rem;
+  border: 1px dashed #d5d9df;
+  border-radius: 6px;
+}
+
+/* Add-content controls */
+.inline-add {
+  display: flex;
+  gap: 1rem;
+  margin: 2.4rem 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+body.inline-editing .inline-add {
+  opacity: 1;
+}
+.inline-add button {
+  padding: 0.9rem 1.6rem;
+  border: 1px dashed #b9bfc7;
+  border-radius: 4px;
+  background: transparent;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 1.4rem;
+  color: #5b616b;
+  cursor: pointer;
+}
+.inline-add button:hover {
+  border-color: #e63946;
+  color: #e63946;
+}
+
+/* Whole-page drop zone feedback when dragging a file in */
+body.inline-editing.drop-active .post-body {
+  box-shadow: inset 0 0 0 3px #e63946;
+  border-radius: 6px;
+}
+
+.inline-empty {
+  padding: 3rem;
+  border: 1px dashed #d5d9df;
+  border-radius: 6px;
+  text-align: center;
+  color: #8a8f98;
+  font-size: 1.6rem;
+}
+
+/* Make room for the fixed bars at the bottom */
+body.inline-editing .post {
+  padding-bottom: 16rem;
+}
+

@@ -1,0 +1,14 @@
+{% if is_admin %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin.css') }}"
+/>
+<div class="admin-bar">
+  <strong>Admin</strong>
+  <a href="{{ url_for('AdminHome') }}">Manage posts</a>
+  <a href="{{ url_for('AdminNew', category='lifestyle') }}">+ Travel post</a>
+  <a href="{{ url_for('AdminNew', category='work') }}">+ Work post</a>
+  <span class="admin-bar-spacer"></span>
+  <a class="admin-bar-danger" href="{{ url_for('Logout') }}">Sign out</a>
+</div>
+{% endif %}
